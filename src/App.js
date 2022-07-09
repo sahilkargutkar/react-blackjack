@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from "react";
-import "./cards/BACK.png";
 import "./App.css";
 
 function App() {
