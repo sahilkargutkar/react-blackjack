@@ -1,13 +1,16 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import "./App.css";
+// import background from "./images/bj-bg.jpg";
 
 function App() {
-  var [dealerSum, setDealerSum] = useState(0);
+  const [canHit, setCanHit] = useState(true);
+  const [deal, setDeal] = useState(false);
 
+  var dealerSum = 0;
   const dealerCards = useRef(null);
   const yourCards = useRef(null);
 
-  var canHit = true;
+  // var canHit = true;
   var yourSum = 0;
 
   var dealerAceCount = 0;
@@ -16,11 +19,17 @@ function App() {
   var hidden;
   var deck;
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   buildDeck();
+  //   shuffleDeck();
+  //   startNewGame();
+  // }, []);
+
+  window.onload = (event) => {
     buildDeck();
     shuffleDeck();
     startNewGame();
-  }, []);
+  };
 
   const buildDeck = () => {
     let values = [
@@ -63,19 +72,22 @@ function App() {
 
   const startNewGame = () => {
     hidden = deck.pop();
-    setDealerSum((dealerSum += getValue(hidden)));
+    dealerSum += getValue(hidden);
     dealerAceCount += checkAce(hidden);
     console.log("hidden", hidden);
 
-    while (dealerSum < 17) {
+    for (let i = 0; i < 1; i++) {
+      // while (dealerSum < 17) {
       let cardImg = document.createElement("img");
       let card = deck.pop();
       cardImg.src = "../cards/" + card + ".png";
-      setDealerSum((dealerSum += getValue(card)));
+      dealerSum += getValue(card);
       dealerAceCount += checkAce(card);
       console.log("dealercards", dealerCards.current);
-      dealerCards.current.appendChild(cardImg);
+      // dealerCards.current.appendChild(cardImg);
+      document.getElementById("dealer-cards").appendChild(cardImg);
     }
+    // }
     console.log("dealerSum", dealerSum);
 
     for (let i = 0; i < 2; i++) {
@@ -84,8 +96,8 @@ function App() {
       cardImg.src = "../cards/" + card + ".png";
       yourSum += getValue(card);
       yourAceCount += checkAce(card);
-      yourCards.current.appendChild(cardImg);
-      // document.getElementById("your-cards").append(cardImg);
+      // yourCards.current.appendChild(cardImg);
+      document.getElementById("your-cards").appendChild(cardImg);
     }
 
     console.log("yoursum", yourSum);
@@ -98,7 +110,7 @@ function App() {
     let value = data[0];
 
     if (isNaN(value)) {
-      if (value == "A") {
+      if (value === "A") {
         return 11;
       }
       return 10;
@@ -107,7 +119,7 @@ function App() {
   };
 
   const checkAce = (card) => {
-    if (card[0] == "A") {
+    if (card[0] === "A") {
       return 1;
     }
     return 0;
@@ -124,6 +136,7 @@ function App() {
 
   const hit = () => {
     if (!canHit) {
+      // stay();
       return;
     }
     let cardImg = document.createElement("img");
@@ -136,7 +149,9 @@ function App() {
     yourCards.current.appendChild(cardImg);
 
     if (reduceAce(yourSum, yourAceCount) > 21) {
-      canHit = false;
+      // canHit = false;
+      setCanHit(false);
+      stay();
       console.log(canHit);
       console.log("yourSuminHit");
     }
@@ -146,8 +161,20 @@ function App() {
     dealerSum = reduceAce(dealerSum, dealerAceCount);
     yourSum = reduceAce(yourSum, yourAceCount);
 
-    canHit = false;
+    // canHit = false;
+    setCanHit(false);
     document.getElementById("hidden").src = "../cards/" + hidden + ".png";
+
+    while (dealerSum < 17) {
+      let cardImg = document.createElement("img");
+      let card = deck.pop();
+      cardImg.src = "../cards/" + card + ".png";
+      dealerSum += getValue(card);
+      dealerAceCount += checkAce(card);
+      console.log("dealercards", dealerCards.current);
+      // dealerCards.current.appendChild(cardImg);
+      document.getElementById("dealer-cards").appendChild(cardImg);
+    }
 
     let message = "";
 
@@ -165,11 +192,16 @@ function App() {
     document.getElementById("your-sum").innerText = yourSum;
     document.getElementById("dealer-sum").innerText = dealerSum;
     document.getElementById("results").innerText = message;
+
+    setDeal(true);
   };
 
   return (
-    <div className="App">
-      <h2>
+    <div
+      className="App"
+      // style={{ backgroundImage: `url(${background})`, height: "500px" }}
+    >
+      <h2 style={{ text: "white" }}>
         Dealer:
         <span id="dealer-sum"></span>
       </h2>
@@ -183,14 +215,30 @@ function App() {
       </h2>
       <div id="your-cards" ref={yourCards}></div>
 
-      <div>
-        <button id="hit" className="">
+      <div className="buttons">
+        <button id="hit" className="hit" disabled={!canHit}>
           Hit
         </button>
-        <button id="stay">Stay</button>
+        <button id="stay" className="stay" disabled={!canHit}>
+          Stay
+        </button>
       </div>
 
       <p id="results"></p>
+      {deal ? (
+        <div>
+          <button
+            className="deal"
+            id="deal"
+            onClick={() => window.location.reload()}
+          >
+            Deal
+          </button>
+        </div>
+      ) : (
+        <div></div>
+      )}
+      {/* <input value="RESTART GAME" onclick="history.go(0)" type="button" /> */}
     </div>
   );
 }

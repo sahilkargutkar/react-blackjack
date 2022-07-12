@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  color: white;
+}
+
+body {
+  background-image: url("./images/bj-bg.jpg");
 }
 
 .dealer-cards img {
@@ -8,8 +13,59 @@
   margin: 1px;
 }
 
+.buttons {
+  flex: auto;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.hit {
+  background-color: #07940c; /* Green */
+  color: white;
+  border: 2px solid black;
+  padding: 15px 36px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.stay {
+  background-color: #d6280a; /* Green */
+  border: none;
+  color: white;
+  border: 2px solid black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.deal {
+  background-color: #7a0ad6; /* Green */
+  border: none;
+  border: 2px solid black;
+  padding: 15px 32px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 #your-cards img {
   height: 175px;
   width: 125px;
   margin: 1px;
+}
+
+#results {
+  color: white;
+  font-size: 22px;
+  font: bold;
 }
