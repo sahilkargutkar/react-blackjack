@@ -67,14 +67,14 @@ function App() {
       deck[i] = deck[j];
       deck[j] = temp;
     }
-    console.log("shuffle deck", deck);
+    // console.log("shuffle deck", deck);
   };
 
   const startNewGame = () => {
     hidden = deck.pop();
     dealerSum += getValue(hidden);
     dealerAceCount += checkAce(hidden);
-    console.log("hidden", hidden);
+    // console.log("hidden", hidden);
 
     for (let i = 0; i < 1; i++) {
       // while (dealerSum < 17) {
@@ -83,12 +83,12 @@ function App() {
       cardImg.src = "../cards/" + card + ".png";
       dealerSum += getValue(card);
       dealerAceCount += checkAce(card);
-      console.log("dealercards", dealerCards.current);
+      // console.log("dealercards", dealerCards.current);
       // dealerCards.current.appendChild(cardImg);
       document.getElementById("dealer-cards").appendChild(cardImg);
     }
     // }
-    console.log("dealerSum", dealerSum);
+    // console.log("dealerSum", dealerSum);
 
     for (let i = 0; i < 2; i++) {
       let cardImg = document.createElement("img");
@@ -100,12 +100,14 @@ function App() {
       document.getElementById("your-cards").appendChild(cardImg);
     }
 
-    console.log("yoursum", yourSum);
+    // console.log("yoursum", yourSum);
     document.getElementById("hit").addEventListener("click", hit);
     document.getElementById("stay").addEventListener("click", stay);
   };
 
   const getValue = (card) => {
+    console.log("cards", card);
+
     let data = card.split("-");
     let value = data[0];
 
@@ -130,7 +132,7 @@ function App() {
       playerSum -= 10;
       playerAceCount -= 1;
     }
-    console.log("playerSum", playerSum);
+    // console.log("playerSum", playerSum);
     return playerSum;
   };
 
@@ -140,7 +142,7 @@ function App() {
       return;
     }
     let cardImg = document.createElement("img");
-    console.log("deck", deck);
+    // console.log("deck", deck);
     let card = deck.pop();
 
     cardImg.src = "../cards/" + card + ".png";
@@ -152,8 +154,8 @@ function App() {
       // canHit = false;
       setCanHit(false);
       stay();
-      console.log(canHit);
-      console.log("yourSuminHit");
+      // console.log(canHit);
+      // console.log("yourSuminHit");
     }
   };
 
@@ -171,7 +173,7 @@ function App() {
       cardImg.src = "../cards/" + card + ".png";
       dealerSum += getValue(card);
       dealerAceCount += checkAce(card);
-      console.log("dealercards", dealerCards.current);
+      // console.log("dealercards", dealerCards.current);
       // dealerCards.current.appendChild(cardImg);
       document.getElementById("dealer-cards").appendChild(cardImg);
     }
@@ -194,6 +196,69 @@ function App() {
     document.getElementById("results").innerText = message;
 
     setDeal(true);
+  };
+
+  const split = () => {
+    console.log("yourSum", yourCards.current);
+
+    const imgVal = document
+      .getElementById("your-cards")
+      .getElementsByTagName("img")[0].src;
+
+    const imgVal2 = document
+      .getElementById("your-cards")
+      .getElementsByTagName("img")[1].src;
+
+    const imgVal3 = document
+      .getElementById("your-cards")
+      .getElementsByTagName("img")[2].src;
+
+    console.log("imgVal", imgVal, imgVal2);
+
+    const subsr1 = imgVal.slice(-7).charAt(0);
+
+    const subsr2 = imgVal2.slice(-7).charAt(0);
+
+    const subsr3 = imgVal3.slice(-7).charAt(0);
+
+    if (subsr1 === subsr2) {
+      console.log("they are equal");
+
+      if (subsr1 === "A") {
+        yourSum = 11; //1;
+      } else {
+        if (subsr1 === "Q" || subsr1 === "J" || subsr1 === "K") {
+          yourSum = 10;
+        } else {
+          yourSum = parseInt(subsr1);
+        }
+      }
+      console.log("yourSum in split", yourSum);
+    }
+
+    if (subsr1 === subsr3) {
+      if (subsr1 === "A") {
+        yourSum = 11; //1;
+      } else {
+        if (subsr1 === "Q" || subsr1 === "J" || subsr1 === "K") {
+          yourSum = 10;
+        } else {
+          yourSum = parseInt(subsr1);
+        }
+      }
+    }
+
+    if (subsr2 === subsr3) {
+      if (subsr2 === "A") {
+        yourSum = 11; //1;
+      } else {
+        if (subsr2 === "Q" || subsr2 === "J" || subsr2 === "K") {
+          yourSum = 10;
+        } else {
+          yourSum = parseInt(subsr2);
+        }
+      }
+    }
   };
 
   return (
@@ -219,6 +284,7 @@ function App() {
         <button id="hit" className="hit" disabled={!canHit}>
           Hit
         </button>
+        <button onClick={split}>split</button>
         <button id="stay" className="stay" disabled={!canHit}>
           Stay
         </button>
