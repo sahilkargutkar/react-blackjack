@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 // import background from "./images/bj-bg.jpg";
 
 function App() {
   const [canHit, setCanHit] = useState(true);
   const [deal, setDeal] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
   var dealerSum = 0;
   const dealerCards = useRef(null);
@@ -19,17 +20,17 @@ function App() {
   var hidden;
   var deck;
 
-  // useEffect(() => {
+  useEffect(() => {
+    buildDeck();
+    shuffleDeck();
+    // startNewGame();
+  }, []);
+
+  // window.onload = (event) => {
   //   buildDeck();
   //   shuffleDeck();
   //   startNewGame();
-  // }, []);
-
-  window.onload = (event) => {
-    buildDeck();
-    shuffleDeck();
-    startNewGame();
-  };
+  // };
 
   const buildDeck = () => {
     let values = [
@@ -60,6 +61,60 @@ function App() {
     // console.log(deck);
   };
 
+  const doubleDown = () => {
+    buildDeck();
+    shuffleDeck();
+
+    debugger;
+    hit();
+    // stay();
+
+    const numOfImgTags = document.getElementById("your-cards");
+    var count = numOfImgTags.getElementsByTagName("img").length;
+
+    let newSum = 0;
+
+    for (let k = 0; k < count; k++) {
+      let yourCount = 0;
+
+      const imgVal = document
+        .getElementById("your-cards")
+        .getElementsByTagName("img")[k].src;
+
+      const num = imgVal.slice(-7).charAt(0);
+
+      console.log("num 1", num);
+
+      if (num === "J" || num === "K" || num === "Q") {
+        yourCount = 10;
+        console.log(num, "num num");
+      } else if (num === "A") {
+        yourCount += 11;
+        yourAceCount += 1;
+      } else {
+        if (num === "0") {
+          yourCount += 10;
+        }
+
+        yourCount = parseInt(num);
+      }
+
+      newSum = newSum + yourCount;
+
+      console.log("imgVal inside for", newSum);
+    }
+    yourSum = newSum;
+
+    const dealerImgTags = document.getElementById("dealer-cards");
+    const dealerCount = dealerImgTags.getElementsByTagName("img")[0];
+    const dealerCount2 = dealerImgTags.getElementsByTagName("img")[1];
+
+    stay(yourSum, yourAceCount);
+
+    dealerCount.remove();
+    dealerCount2.remove();
+  };
+
   const shuffleDeck = () => {
     for (let i = 0; i < deck.length; i++) {
       let j = Math.floor(Math.random() * deck.length);
@@ -71,6 +126,8 @@ function App() {
   };
 
   const startNewGame = () => {
+    setGameStarted(true);
+
     hidden = deck.pop();
     dealerSum += getValue(hidden);
     dealerAceCount += checkAce(hidden);
@@ -136,7 +193,7 @@ function App() {
     return playerSum;
   };
 
-  const hit = () => {
+  function hit() {
     if (!canHit) {
       // stay();
       return;
@@ -157,11 +214,13 @@ function App() {
       // console.log(canHit);
       // console.log("yourSuminHit");
     }
-  };
+  }
 
-  const stay = () => {
+  function stay(mySum, myAceCount, newDealerSum, newDealerAceCount) {
+    debugger;
     dealerSum = reduceAce(dealerSum, dealerAceCount);
     yourSum = reduceAce(yourSum, yourAceCount);
+    mySum = reduceAce(mySum, myAceCount);
 
     // canHit = false;
     setCanHit(false);
@@ -191,14 +250,31 @@ function App() {
     } else if (yourSum < dealerSum) {
       message = "You Lose";
     }
+
+    if (mySum > 21) {
+      message = "You Lose";
+    } else if (dealerSum > 21) {
+      message = "You Win";
+    } else if (mySum === dealerSum) {
+      message = "Tie";
+    } else if (mySum > dealerSum) {
+      message = "You Win";
+    } else if (mySum < dealerSum) {
+      message = "You Lose";
+    }
+
+    if (mySum) {
+      document.getElementById("your-sum").innerText = mySum;
+    }
+
     document.getElementById("your-sum").innerText = yourSum;
     document.getElementById("dealer-sum").innerText = dealerSum;
     document.getElementById("results").innerText = message;
 
     setDeal(true);
-  };
+  }
 
-  const split = () => {
+  function split() {
     console.log("yourSum", yourCards.current);
 
     const imgVal = document
@@ -259,6 +335,10 @@ function App() {
         }
       }
     }
+  }
+
+  const startGame = () => {
+    startNewGame();
   };
 
   return (
@@ -266,45 +346,64 @@ function App() {
       className="App"
       // style={{ backgroundImage: `url(${background})`, height: "500px" }}
     >
-      <h2 style={{ text: "white" }}>
-        Dealer:
-        <span id="dealer-sum"></span>
-      </h2>
+      <div>
+        <h2 style={{ text: "white" }}>
+          Dealer:
+          <span id="dealer-sum"></span>
+        </h2>
 
-      <div id="dealer-cards" className="dealer-cards" ref={dealerCards}>
-        <img id="hidden" src={"../cards/BACK.png"} alt="card back" />
-      </div>
+        <div id="dealer-cards" className="dealer-cards" ref={dealerCards}>
+          <img id="hidden" src={"../cards/BACK.png"} alt="card back" />
+        </div>
 
-      <h2>
-        You: <span id="your-sum"></span>
-      </h2>
-      <div id="your-cards" ref={yourCards}></div>
+        <h2>
+          You: <span id="your-sum"></span>
+        </h2>
+        <div id="your-cards" ref={yourCards}></div>
 
-      <div className="buttons">
-        <button id="hit" className="hit" disabled={!canHit}>
-          Hit
-        </button>
-        <button onClick={split}>split</button>
-        <button id="stay" className="stay" disabled={!canHit}>
-          Stay
-        </button>
-      </div>
-
-      <p id="results"></p>
-      {deal ? (
-        <div>
+        <div className="buttons">
+          <button id="hit" className="hit" disabled={!canHit}>
+            Hit
+          </button>
           <button
-            className="deal"
-            id="deal"
-            onClick={() => window.location.reload()}
+            onClick={doubleDown}
+            id="dd"
+            disabled={!gameStarted}
+            className="dd"
           >
-            Deal
+            Double Down
+          </button>
+          <button onClick={split} id="split" className="split">
+            split
+          </button>
+          <button id="stay" className="stay" disabled={!canHit}>
+            Stay
           </button>
         </div>
+
+        <p id="results"></p>
+        {deal ? (
+          <div>
+            <button
+              className="deal"
+              id="deal"
+              onClick={() => window.location.reload()}
+            >
+              Deal
+            </button>
+          </div>
+        ) : (
+          <div></div>
+        )}
+        {/* <input value="RESTART GAME" onclick="history.go(0)" type="button" /> */}
+      </div>
+      {!gameStarted ? (
+        <button onClick={startGame} disabled={gameStarted}>
+          Start Game
+        </button>
       ) : (
-        <div></div>
+        <></>
       )}
-      {/* <input value="RESTART GAME" onclick="history.go(0)" type="button" /> */}
     </div>
   );
 }
