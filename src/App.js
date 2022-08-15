@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import { injectStyle } from "react-toastify/dist/inject-style";
 import "./App.css";
+import MetaData from "./components/Meta/MetaData";
 // import background from "./images/bj-bg.jpg";
+
+if (typeof window !== "undefined") {
+  injectStyle();
+}
 
 function App() {
   const [canHit, setCanHit] = useState(true);
@@ -19,6 +26,8 @@ function App() {
 
   var hidden;
   var deck;
+
+  const info = () => toast("wow so easy");
 
   useEffect(() => {
     buildDeck();
@@ -64,8 +73,6 @@ function App() {
   const doubleDown = () => {
     buildDeck();
     shuffleDeck();
-
-    debugger;
     hit();
     // stay();
 
@@ -82,12 +89,17 @@ function App() {
         .getElementsByTagName("img")[k].src;
 
       const num = imgVal.slice(-7).charAt(0);
+      const num2 = imgVal.slice(-7).charAt(1);
 
-      console.log("num 1", num);
+      if (num === num2) {
+        toast.error("The Correct play is to split");
+      }
+
+      // console.log("num 1", num);
 
       if (num === "J" || num === "K" || num === "Q") {
         yourCount = 10;
-        console.log(num, "num num");
+        // console.log(num, "num num");
       } else if (num === "A") {
         yourCount += 11;
         yourAceCount += 1;
@@ -101,7 +113,11 @@ function App() {
 
       newSum = newSum + yourCount;
 
-      console.log("imgVal inside for", newSum);
+      if (newSum === 11 || newSum === 10) {
+        toast.info("You should have doubled down");
+      }
+
+      console.log(newSum);
     }
     yourSum = newSum;
 
@@ -163,7 +179,7 @@ function App() {
   };
 
   const getValue = (card) => {
-    console.log("cards", card);
+    // console.log("cards", card);
 
     let data = card.split("-");
     let value = data[0];
@@ -207,17 +223,45 @@ function App() {
     yourAceCount += checkAce(card);
     yourCards.current.appendChild(cardImg);
 
+    const imgVal = document
+      .getElementById("your-cards")
+      .getElementsByTagName("img")[0].src;
+
+    const imgVal2 = document
+      .getElementById("your-cards")
+      .getElementsByTagName("img")[1].src;
+
+    const subsr1 = imgVal.slice(-7).charAt(0);
+    const subsr2 = imgVal2.slice(-7).charAt(0);
+
+    if (parseInt(subsr1) === 10 && parseInt(subsr2) === 10) {
+      toast.info("You Should Stay");
+    }
+
+    if (subsr1 === subsr2) {
+      toast.error("The Correct play is to split");
+    }
+
+    if (subsr1 === "A" && subsr2 === "A") {
+      toast.info("You Should Split");
+    }
+
+    if (yourSum >= 17 && yourSum <= 21) {
+      // toast.info("Call Stay");
+    }
+
     if (reduceAce(yourSum, yourAceCount) > 21) {
       // canHit = false;
+
       setCanHit(false);
       stay();
+
       // console.log(canHit);
       // console.log("yourSuminHit");
     }
   }
 
   function stay(mySum, myAceCount, newDealerSum, newDealerAceCount) {
-    debugger;
     dealerSum = reduceAce(dealerSum, dealerAceCount);
     yourSum = reduceAce(yourSum, yourAceCount);
     mySum = reduceAce(mySum, myAceCount);
@@ -240,26 +284,59 @@ function App() {
     let message = "";
 
     if (yourSum > 21) {
-      message = "You Lose";
+      if (yourSum <= 24) {
+        toast.info("Better luck next time");
+        message = "You Lose";
+      } else {
+        toast.error("Sorry, the correct play is to Stay");
+        message = "You Lose";
+      }
     } else if (dealerSum > 21) {
+      toast.info("Great!  That's the correct play!");
       message = "You Win";
     } else if (yourSum === dealerSum) {
-      message = "Tie";
+      if (yourSum <= 21) {
+        toast.info("Great!  That's the correct play!");
+        message = "Tie";
+      }
+      message = "You Lose";
     } else if (yourSum > dealerSum) {
+      toast.info("Great!  That's the correct play!");
       message = "You Win";
     } else if (yourSum < dealerSum) {
+      if (dealerSum - yourSum <= 4) {
+        toast.info("Better Luck next Time");
+        message = "You Lose";
+      }
       message = "You Lose";
     }
 
     if (mySum > 21) {
-      message = "You Lose";
+      if (mySum <= 24) {
+        toast.info("Better Luck next Time");
+        message = "You Lose";
+      } else {
+        toast.error("Sorry, the correct play is to Stay");
+        message = "You Lose";
+      }
     } else if (dealerSum > 21) {
+      toast.info("Great!  That's the correct play!");
       message = "You Win";
     } else if (mySum === dealerSum) {
-      message = "Tie";
+      if (mySum <= 21) {
+        toast.info("Great!  That's the correct play!");
+        message = "Tie";
+      }
+      message = "You Lose";
     } else if (mySum > dealerSum) {
+      toast.info("Great!  That's the correct play!");
       message = "You Win";
     } else if (mySum < dealerSum) {
+      if (dealerSum - mySum <= 4) {
+        toast.info("Better Luck next Time");
+        message = "You Lose";
+      }
+
       message = "You Lose";
     }
 
@@ -275,8 +352,6 @@ function App() {
   }
 
   function split() {
-    console.log("yourSum", yourCards.current);
-
     const imgVal = document
       .getElementById("your-cards")
       .getElementsByTagName("img")[0].src;
@@ -289,7 +364,7 @@ function App() {
       .getElementById("your-cards")
       .getElementsByTagName("img")[2].src;
 
-    console.log("imgVal", imgVal, imgVal2);
+    // console.log("imgVal", imgVal, imgVal2);
 
     const subsr1 = imgVal.slice(-7).charAt(0);
 
@@ -298,7 +373,8 @@ function App() {
     const subsr3 = imgVal3.slice(-7).charAt(0);
 
     if (subsr1 === subsr2) {
-      console.log("they are equal");
+      // console.log("they are equal");
+      toast.info("Great!  That's the correct play!");
 
       if (subsr1 === "A") {
         yourSum = 11; //1;
@@ -309,7 +385,7 @@ function App() {
           yourSum = parseInt(subsr1);
         }
       }
-      console.log("yourSum in split", yourSum);
+      // console.log("yourSum in split", yourSum);
     }
 
     if (subsr1 === subsr3) {
@@ -326,7 +402,6 @@ function App() {
 
     if (subsr2 === subsr3) {
       if (subsr2 === "A") {
-        yourSum = 11; //1;
       } else {
         if (subsr2 === "Q" || subsr2 === "J" || subsr2 === "K") {
           yourSum = 10;
@@ -339,71 +414,84 @@ function App() {
 
   const startGame = () => {
     startNewGame();
+    toast.info("Shuffling and Dealing Cards");
   };
 
   return (
-    <div
-      className="App"
-      // style={{ backgroundImage: `url(${background})`, height: "500px" }}
-    >
-      <div>
-        <h2 style={{ text: "white" }}>
-          Dealer:
-          <span id="dealer-sum"></span>
-        </h2>
+    <div>
+      <MetaData title="How to Win at Cards" />
+      <h1 className="blackjack" id="blackjack">
+        How to Win at Blackjack
+      </h1>
+      <div
+        className="App"
+        // style={{ backgroundImage: `url(${background})`, height: "500px" }}
+      >
+        <div>
+          <h2 style={{ text: "white" }}>
+            Dealer:
+            <span id="dealer-sum"></span>
+            <ToastContainer limit={2} autoClose={2000} />
+          </h2>
 
-        <div id="dealer-cards" className="dealer-cards" ref={dealerCards}>
-          <img id="hidden" src={"../cards/BACK.png"} alt="card back" />
-        </div>
+          <div id="dealer-cards" className="dealer-cards" ref={dealerCards}>
+            <img id="hidden" src={"../cards/BACK.png"} alt="card back" />
+          </div>
 
-        <h2>
-          You: <span id="your-sum"></span>
-        </h2>
-        <div id="your-cards" ref={yourCards}></div>
+          <h2>
+            You: <span id="your-sum"></span>
+          </h2>
+          <div id="your-cards" ref={yourCards}></div>
 
-        <div className="buttons">
-          <button id="hit" className="hit" disabled={!canHit}>
-            Hit
-          </button>
-          <button
-            onClick={doubleDown}
-            id="dd"
-            disabled={!gameStarted}
-            className="dd"
-          >
-            Double Down
-          </button>
-          <button onClick={split} id="split" className="split">
-            split
-          </button>
-          <button id="stay" className="stay" disabled={!canHit}>
-            Stay
-          </button>
-        </div>
-
-        <p id="results"></p>
-        {deal ? (
-          <div>
+          <div className="buttons">
+            <button id="hit" className="hit" disabled={!canHit}>
+              Hit
+            </button>
             <button
-              className="deal"
-              id="deal"
-              onClick={() => window.location.reload()}
+              onClick={doubleDown}
+              id="dd"
+              disabled={!gameStarted}
+              className="dd"
             >
-              Deal
+              Double Down
+            </button>
+            <button onClick={split} id="split" className="split">
+              split
+            </button>
+            <button id="stay" className="stay" disabled={!canHit}>
+              Stay
             </button>
           </div>
+
+          <p id="results"></p>
+          {deal ? (
+            <div>
+              <button
+                className="deal"
+                id="deal"
+                onClick={() => window.location.reload()}
+              >
+                Deal
+              </button>
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {/* <input value="RESTART GAME" onclick="history.go(0)" type="button" /> */}
+        </div>
+        {!gameStarted ? (
+          <button
+            className="deal"
+            id="deal"
+            onClick={startGame}
+            disabled={gameStarted}
+          >
+            Start Game
+          </button>
         ) : (
-          <div></div>
+          <></>
         )}
-        {/* <input value="RESTART GAME" onclick="history.go(0)" type="button" /> */}
       </div>
-      {!gameStarted ? (
-        <button onClick={startGame} disabled={gameStarted}>
-          Start Game
-        </button>
-      ) : (
-        <></>
-      )}
     </div>
   );
 }
