@@ -3,6 +3,13 @@ import { ToastContainer, toast } from "react-toastify";
 import { injectStyle } from "react-toastify/dist/inject-style";
 import "./App.css";
 import MetaData from "./components/Meta/MetaData";
+import TagManager from "react-gtm-module";
+
+const tagManagerArgs = {
+  gtmId: "G-R84ZFX4D61",
+};
+
+TagManager.initialize(tagManagerArgs);
 // import background from "./images/bj-bg.jpg";
 
 if (typeof window !== "undefined") {
@@ -40,6 +47,20 @@ function App() {
   //   shuffleDeck();
   //   startNewGame();
   // };
+
+  //  <script
+  //     async
+  //     src="https://www.googletagmanager.com/gtag/js?id=G-R84ZFX4D61"
+  //   ></script>
+  //   <script>
+  //     window.dataLayer = window.dataLayer || [];
+  //     function gtag() {
+  //       dataLayer.push(arguments);
+  //     }
+  //     gtag("js", new Date());
+
+  //     gtag("config", "G-R84ZFX4D61");
+  //   </script>
 
   const buildDeck = () => {
     let values = [
