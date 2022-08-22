@@ -20,6 +20,7 @@ function App() {
   const [canHit, setCanHit] = useState(true);
   const [deal, setDeal] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   var dealerSum = 0;
   const dealerCards = useRef(null);
@@ -115,8 +116,6 @@ function App() {
       if (num === num2) {
         toast.error("The Correct play is to split");
       }
-
-      // console.log("num 1", num);
 
       if (num === "J" || num === "K" || num === "Q") {
         yourCount = 10;
@@ -313,7 +312,6 @@ function App() {
         message = "You Lose";
       }
     } else if (dealerSum > 21) {
-      toast.info("Great!  That's the correct play!");
       message = "You Win";
     } else if (yourSum === dealerSum) {
       if (yourSum <= 21) {
@@ -327,6 +325,9 @@ function App() {
     } else if (yourSum < dealerSum) {
       if (dealerSum - yourSum <= 4) {
         toast.info("Better Luck next Time");
+        message = "You Lose";
+      } else {
+        toast.error("You should have clicked hit");
         message = "You Lose";
       }
       message = "You Lose";
@@ -356,8 +357,10 @@ function App() {
       if (dealerSum - mySum <= 4) {
         toast.info("Better Luck next Time");
         message = "You Lose";
+      } else {
+        toast.error("You should have clicked hit");
+        message = "You Lose";
       }
-
       message = "You Lose";
     }
 
@@ -382,8 +385,8 @@ function App() {
       .getElementsByTagName("img")[1].src;
 
     const imgVal3 = document
-      .getElementById("your-cards")
-      .getElementsByTagName("img")[2].src;
+      ?.getElementById("your-cards")
+      ?.getElementsByTagName("img")[2]?.src;
 
     // console.log("imgVal", imgVal, imgVal2);
 
@@ -391,34 +394,51 @@ function App() {
 
     const subsr2 = imgVal2.slice(-7).charAt(0);
 
-    const subsr3 = imgVal3.slice(-7).charAt(0);
+    const subsr3 = imgVal3?.slice(-7).charAt(0);
+
+    if (subsr1 !== subsr2) {
+      console.log("subsr2", subsr1.toString(), subsr2.toString());
+      toast.error("Split should only be called with two similar cards");
+    }
 
     if (subsr1 === subsr2) {
-      // console.log("they are equal");
-      toast.info("Great!  That's the correct play!");
+      console.log("subsr1", subsr1, subsr2);
 
-      if (subsr1 === "A") {
+      if (subsr1.toString() === "A") {
         yourSum = 11; //1;
+        setDisabled(true);
       } else {
-        if (subsr1 === "Q" || subsr1 === "J" || subsr1 === "K") {
+        console.log("nooman");
+        if (
+          subsr1.toString() === "Q" ||
+          subsr1.toString() === "J" ||
+          subsr1.toString() === "K"
+        ) {
+          console.log("nootwo");
           yourSum = 10;
         } else {
           yourSum = parseInt(subsr1);
         }
       }
-      // console.log("yourSum in split", yourSum);
+      stay(yourSum, yourAceCount);
     }
 
     if (subsr1 === subsr3) {
-      if (subsr1 === "A") {
+      if (subsr1.toString() === "A") {
         yourSum = 11; //1;
+        setDisabled(true);
       } else {
-        if (subsr1 === "Q" || subsr1 === "J" || subsr1 === "K") {
+        if (
+          subsr1.toString() === "Q" ||
+          subsr1.toString() === "J" ||
+          subsr1.toString() === "K"
+        ) {
           yourSum = 10;
         } else {
           yourSum = parseInt(subsr1);
         }
       }
+      stay(yourSum, yourAceCount);
     }
 
     if (subsr2 === subsr3) {
@@ -430,12 +450,13 @@ function App() {
           yourSum = parseInt(subsr2);
         }
       }
+      stay(yourSum, yourAceCount);
     }
   }
 
   const startGame = () => {
     startNewGame();
-    toast.info("Shuffling and Dealing Cards");
+    // toast.info("Shuffling and Dealing Cards");
   };
 
   return (
@@ -452,7 +473,7 @@ function App() {
           <h2 style={{ text: "white" }}>
             Dealer:
             <span id="dealer-sum"></span>
-            <ToastContainer limit={2} autoClose={2000} />
+            <ToastContainer limit={1} autoClose={2000} />
           </h2>
 
           <div id="dealer-cards" className="dealer-cards" ref={dealerCards}>
@@ -465,7 +486,7 @@ function App() {
           <div id="your-cards" ref={yourCards}></div>
 
           <div className="buttons">
-            <button id="hit" className="hit" disabled={!canHit}>
+            <button id="hit" className="hit" disabled={!canHit || disabled}>
               Hit
             </button>
             <button
