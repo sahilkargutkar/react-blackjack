@@ -21,6 +21,7 @@ function App() {
   const [deal, setDeal] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [newDeck, setDeck] = useState([]);
 
   var dealerSum = 0;
   const dealerCards = useRef(null);
@@ -33,15 +34,19 @@ function App() {
   var yourAceCount = 0;
 
   var hidden;
-  var deck;
+  // var deck;
 
   const info = () => toast("wow so easy");
 
-  useEffect(() => {
-    buildDeck();
-    shuffleDeck();
-    // startNewGame();
-  }, []);
+  useEffect(
+    (newDeck) => {
+      buildDeck(newDeck);
+      shuffleDeck();
+      // startNewGame();
+      console.log("newArr", newDeck);
+    },
+    [newDeck]
+  );
 
   // window.onload = (event) => {
   //   buildDeck();
@@ -63,7 +68,7 @@ function App() {
   //     gtag("config", "G-R84ZFX4D61");
   //   </script>
 
-  const buildDeck = () => {
+  const buildDeck = (newDeck) => {
     let values = [
       "A",
       "2",
@@ -82,13 +87,15 @@ function App() {
 
     let types = ["C", "D", "H", "S"];
 
-    deck = [];
+    let deck = [];
 
     for (let i = 0; i < types.length; i++) {
       for (let j = 0; j < values.length; j++) {
         deck.push(values[j] + "-" + types[i]);
       }
     }
+
+    setDeck(deck);
     // console.log(deck);
   };
 
@@ -152,27 +159,30 @@ function App() {
   };
 
   const shuffleDeck = () => {
+    let deck = newDeck;
     for (let i = 0; i < deck.length; i++) {
       let j = Math.floor(Math.random() * deck.length);
       let temp = deck[i];
       deck[i] = deck[j];
       deck[j] = temp;
     }
+    setDeck(deck);
     // console.log("shuffle deck", deck);
   };
 
   const startNewGame = () => {
     setGameStarted(true);
 
-    hidden = deck.pop();
+    hidden = newDeck.pop();
     dealerSum += getValue(hidden);
     dealerAceCount += checkAce(hidden);
     // console.log("hidden", hidden);
+    console.log(newDeck);
 
     for (let i = 0; i < 1; i++) {
       // while (dealerSum < 17) {
       let cardImg = document.createElement("img");
-      let card = deck.pop();
+      let card = newDeck.pop();
       cardImg.src = "../cards/" + card + ".png";
       dealerSum += getValue(card);
       dealerAceCount += checkAce(card);
@@ -185,7 +195,7 @@ function App() {
 
     for (let i = 0; i < 2; i++) {
       let cardImg = document.createElement("img");
-      let card = deck.pop();
+      let card = newDeck.pop();
       cardImg.src = "../cards/" + card + ".png";
       yourSum += getValue(card);
       yourAceCount += checkAce(card);
@@ -236,7 +246,8 @@ function App() {
     }
     let cardImg = document.createElement("img");
     // console.log("deck", deck);
-    let card = deck.pop();
+    console.log(newDeck);
+    let card = newDeck.pop();
 
     cardImg.src = "../cards/" + card + ".png";
     yourSum += getValue(card);
@@ -292,7 +303,7 @@ function App() {
 
     while (dealerSum < 17) {
       let cardImg = document.createElement("img");
-      let card = deck.pop();
+      let card = newDeck.pop();
       cardImg.src = "../cards/" + card + ".png";
       dealerSum += getValue(card);
       dealerAceCount += checkAce(card);
