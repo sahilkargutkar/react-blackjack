@@ -1,0 +1,42 @@
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 30%;
+}
+
+.button {
+  color: white;
+  border: 2px solid black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 15px;
+}
+
+.button:nth-child(1) {
+  background-color: green;
+}
+
+.button:nth-child(2) {
+  background-color: #d6c80a;
+}
+
+.button:nth-child(3) {
+  background-color: blue;
+}
+
+.button:nth-child(4) {
+  background-color: red;
+}
+
+.button:nth-child(5) {
+  background-color: purple;
+  margin-right: 0px;
+  margin-top: 30px;
+}
+
