@@ -50,7 +50,7 @@ const App = () => {
     const isEnableToSplit =
       previousHand.some((card) => card.value === lastCard.value) && !isSplitted;
     if (isEnableToSplit) {
-      toast.info('You just splitted your hand');
+      toast.info("Great That's the correct play");
       dispatch({ type: types.setUserHandValues, payload: [...userHandValues].slice(0, -1) });
       dispatch({ type: types.setIsSplitted, payload: true });
     } else if (isSplitted) {
@@ -60,12 +60,26 @@ const App = () => {
     }
   };
 
+  const dealerOpensHand = () => {
+    dispatch({ type: types.dealerOpensCard });
+  };
+
   const compareScores = () => {
+    dealerOpensHand();
     let message = 'You Lose';
+    // eslint-disable-next-line no-debugger
+    debugger;
+    if (userScore - dealerScore <= 5 || dealerScore - userScore >= 5) {
+      message = 'Better luck next time';
+    }
+    if (userScore === dealerScore) {
+      dealerOpensHand();
+      message = 'Tie';
+    }
     if (dealerScore > 21) {
       message = 'You Win';
     } else if (userScore > dealerScore) {
-      message = 'You Win';
+      message = "Great! That's the correct play!";
     }
     toast.info(message);
   };
@@ -87,10 +101,6 @@ const App = () => {
   const hit = () => {
     dispatch({ type: types.hit });
     dispatch({ type: types.setIsSplitted, payload: false });
-  };
-
-  const dealerOpensHand = () => {
-    dispatch({ type: types.dealerOpensCard });
   };
 
   const stay = () => {
@@ -137,8 +147,12 @@ const App = () => {
   }, [userGame, gameStarted]);
 
   useEffect(() => {
-    if (userScore > 21) {
+    if (userScore >= 21 && userScore < 27) {
       toast.info('You Lose');
+      dispatch({ type: types.setGameStayed, payload: true });
+      dispatch({ type: types.endGame });
+    } else if (userScore >= 27) {
+      toast.info('The Correct Play is to stay');
       dispatch({ type: types.setGameStayed, payload: true });
       dispatch({ type: types.endGame });
     }
